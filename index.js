@@ -33,7 +33,7 @@ var Arbit = {
 axios.get(`${WARFRAME_API_URL}/${platform}/arbitration`, { headers:
 WARFRAME_API_REQUEST_HEADERS })
   .then(response => {
-  console.log(response.data);
+  Arbit = response.data;
 })
 .catch(error => console.error('On get error',error))
 
