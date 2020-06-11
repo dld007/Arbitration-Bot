@@ -37,8 +37,9 @@ WARFRAME_API_REQUEST_HEADERS })
 })
 .catch(error => console.error('On get error',error))
 
-//Change Arbit expiry to be readable
-Arbit.expiry= Arbit.expiry.substring(11,16);
+//Change Arbit expiry to be readable - BUGGED
+var expiration = Arbit.expiry;
+console.log(expiration)
 
 //Log in
 const client = new Discord.Client()
@@ -48,10 +49,8 @@ client.on("ready", () => {
 
 //If user sends !Arbit, send arbitration data
 client.on("message", msg => {
-  if (msg.content === "!Arbit") {
+  if (msg.content === "!Arbitration") {
     msg.reply("The current arbitration is in " + Arbit.node + " with enemy "
-      + Arbit.enemy + " and expires at " + Arbit.expiry);
+      + Arbit.enemy + " and expires at " + expiration);
   }
 })
-
-client.login(process.env.BOT_TOKEN)
