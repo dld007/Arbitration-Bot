@@ -33,13 +33,13 @@ var Arbit = {
 axios.get(`${WARFRAME_API_URL}/${platform}/arbitration`, { headers:
 WARFRAME_API_REQUEST_HEADERS })
   .then(response => {
-  Arbit = response.data;
+  console.log(response.data);
 })
 .catch(error => console.error('On get error',error))
 
-//Change Arbit expiry to be readable - BUGGED
-var expiration = Arbit.expiry;
-console.log(expiration)
+var now = new Date();
+console.log(now.getUTCMinutes());
+console.log(now.getUTCHours());
 
 //Log in
 const client = new Discord.Client()
@@ -51,8 +51,9 @@ client.on("ready", () => {
 client.on("message", msg => {
   if (msg.content === "!Arbitration") {
     msg.reply("The current arbitration is in " + Arbit.node + " with enemy "
-      + Arbit.enemy + " and expires at " + expiration);
+      + Arbit.enemy + " and expires at " + (now.getUTCHours()-3) + ":00 EST");
   }
 })
 
 client.login(process.env.BOT_TOKEN)
+
