@@ -37,6 +37,9 @@ WARFRAME_API_REQUEST_HEADERS })
 })
 .catch(error => console.error('On get error',error))
 
+//Change Arbit expiry to be readable
+Arbit.expiry= Arbit.expiry.substring(11,16);
+
 //Log in
 const client = new Discord.Client()
 client.on("ready", () => {
