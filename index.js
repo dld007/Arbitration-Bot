@@ -54,3 +54,5 @@ client.on("message", msg => {
       + Arbit.enemy + " and expires at " + expiration);
   }
 })
+
+client.login(process.env.BOT_TOKEN)
