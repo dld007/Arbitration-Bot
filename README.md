@@ -7,3 +7,4 @@ This Discord bot reports the arbitration mission type, location, enemy, and expi
 3. Grab a token on [Discord's developer portal](https://discord.com/developers/applications)
 4. Create a `.env` file and add a `BOT_TOKEN` environmental variable whose value is the token above.
 5. Run `npm run dev`
+6. Initialize the bot by sending `$arbitration` in the desired channel at the 18th minute of the hour.
