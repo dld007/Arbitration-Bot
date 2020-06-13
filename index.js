@@ -29,6 +29,20 @@ var Arbit = {
   "sharkwing": true
 };
 
+//Function to convert UTC time to EST plus one, to round to the next hour
+//Returns an integer between 0 and 23
+function getESTTimePlusOne() {
+    var UTCTime = new Date();
+    var time = UTCTime.getUTCHours();
+    if (time < 3) { //If UTC time is between 1AM and 3AM, adjust to avoid negatives
+      time = time + 21;
+    }
+    else { //If UTC time is after 3AM
+      time = time - 3;
+    }
+    return time;
+}
+
 //Function to retrieve arbitration data from server
 //Returns a string with data description
 function getWarframeData() {
@@ -39,10 +53,10 @@ function getWarframeData() {
     console.log(response.data);
   })
   .catch(error => console.error('On get error',error))
-  now = new Date();
+  var now = getESTTimePlusOne();
 
   var oString = "The current arbitration is a " + Arbit.type + " mission in " +
-    Arbit.node + " with enemy " + Arbit.enemy + " and expires at " + (now.getUTCHours()-3) + ":00 EST";
+    Arbit.node + " with enemy " + Arbit.enemy + " and expires at " + now + ":00 EST";
 
   return oString;
 }
@@ -57,17 +71,20 @@ client.on("ready", () => {
 //hour afterwards, the bot sends the new arbitration data
 client.on('message', function(message) {
     // Now, you can use the message variable inside
+    var interval;
     if (message.content === "$arbitration") {
         outputString = getWarframeData();
+        outputString = getWarframeData(); //Repetition ensures that data comes through correctly
         message.channel.send(outputString)
         .catch(error => console.error('On get error',error));
 
-        var interval = setInterval (function () {
-            outputString = getWarframeData();
-            // use the message's channel (TextChannel) to send a new message
-            message.channel.send(outputString)
-            .catch(error => console.error('On get error',error));
-        }, 3600000);
+        if (!interval) { //If interval has not been initialized yet. Ensures there is only one repeating message/hr
+          interval = setInterval (function () {
+              outputString = getWarframeData();
+              message.channel.send(outputString)
+              .catch(error => console.error('On get error',error));
+          }, 3600000);
+      }
     }
 });
 
