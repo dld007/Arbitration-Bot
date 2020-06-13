@@ -69,12 +69,12 @@ client.on("ready", () => {
 
 //If a user sends "$arbitration" into a channel, it returns the arbitration data and then every
 //hour afterwards, the bot sends the new arbitration data
+var interval;
 client.on('message', function(message) {
     // Now, you can use the message variable inside
-    var interval;
     if (message.content === "$arbitration") {
         outputString = getWarframeData();
-        outputString = getWarframeData(); //Repetition ensures that data comes through correctly
+        outputString = getWarframeData(); //Repetition to ensure data comes through from library
         message.channel.send(outputString)
         .catch(error => console.error('On get error',error));
 
