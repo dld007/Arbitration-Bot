@@ -80,10 +80,13 @@ client.on('message', function(message) {
 
         if (!interval) { //If interval has not been initialized yet. Ensures there is only one repeating message/hr
           interval = setInterval (function () {
+              oldActTime = Arbit.activation;
               outputString = getWarframeData();
-              message.channel.send(outputString)
-              .catch(error => console.error('On get error',error));
-          }, 3600000);
+              if (Arbit.activation && oldActTime.localeCompare(Arbit.activation) != 0) { //If activation is a valid string and different from the old one
+                message.channel.send(outputString)
+                .catch(error => console.error('On get error',error));
+              }
+          }, 60000);
       }
     }
 });
