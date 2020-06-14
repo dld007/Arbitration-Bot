@@ -70,6 +70,7 @@ client.on("ready", () => {
 //If a user sends "$arbitration" into a channel, it returns the arbitration data and then every
 //hour afterwards, the bot sends the new arbitration data
 var interval;
+var oldActTime;
 client.on('message', function(message) {
     // Now, you can use the message variable inside
     if (message.content === "$arbitration") {
@@ -80,7 +81,9 @@ client.on('message', function(message) {
 
         if (!interval) { //If interval has not been initialized yet. Ensures there is only one repeating message/hr
           interval = setInterval (function () {
-              oldActTime = Arbit.activation;
+              if (Arbit.activation) {
+                  oldActTime = Arbit.activation;
+              }
               outputString = getWarframeData();
               if (Arbit.activation && oldActTime.localeCompare(Arbit.activation) != 0) { //If activation is a valid string and different from the old one
                 message.channel.send(outputString)
