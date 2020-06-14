@@ -89,7 +89,7 @@ client.on('message', function(message) {
               outputString = getWarframeData();
               if (Arbit.activation) {
                   newActTime = Arbit.activation;
-                  if (oldActTime.localeCompare(newActTime)) {
+                  if (oldActTime.localeCompare(newActTime) != 0) {
                     message.channel.send(outputString)
                     .catch(error => console.error('On get error',error));
                   }
