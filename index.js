@@ -11,7 +11,8 @@ const Discord = require("discord.js")
 const worldstateData = require('warframe-worldstate-data');
 const WARFRAME_API_URL = 'https://api.warframestat.us';
 const platform = 'pc';
-const arbit = "arbitration"
+const arbit = "arbitration";
+var outputString = "";
 
 const WARFRAME_API_REQUEST_HEADERS = {
   'Content-Type': 'application/json',
@@ -50,7 +51,6 @@ function getWarframeData() {
   WARFRAME_API_REQUEST_HEADERS })
     .then(response => {
     Arbit = response.data;
-    console.log(response.data);
   })
   .catch(error => console.error('On get error',error))
   var now = getESTTimePlusOne();
@@ -70,8 +70,6 @@ client.on("ready", () => {
 //If a user sends "$arbitration" into a channel, it returns the arbitration data and then every
 //hour afterwards, the bot sends the new arbitration data
 var interval;
-var oldActTime;
-var newActTime;
 client.on('message', function(message) {
     // Now, you can use the message variable inside
     if (message.content === "$arbitration") {
@@ -80,22 +78,26 @@ client.on('message', function(message) {
         message.channel.send(outputString)
         .catch(error => console.error('On get error',error));
 
+        //Sends a message to the specified channel about new arbitration data whenever the activation time swtiches
+        var oldActTime = Arbit.activation;
+        function sendWarframeData(oldAc) {
+          outputString = getWarframeData();
+          if (Arbit.activation) {
+            if (oldAc.localeCompare(Arbit.activation) != 0) {
+                message.channel.send(outputString)
+                .catch(error => console.error('On get error',error));
+            }
+            var newA = Arbit.activation; //Reassign activation time if it's not undefined
+            return newA;
+          }
+          return oldAc; //Activation time is currently undefined, keep old activation time
+        }
+
         if (!interval) { //If interval has not been initialized yet. Ensures there is only one repeating message/hr
-          interval = setInterval (function () {
-              if (Arbit.activation) {
-                oldActTime = Arbit.activation;
-                console.log(oldActTime);
-              }
-              outputString = getWarframeData();
-              if (Arbit.activation) {
-                  newActTime = Arbit.activation;
-                  if (oldActTime.localeCompare(newActTime) != 0) {
-                    message.channel.send(outputString)
-                    .catch(error => console.error('On get error',error));
-                  }
-              }
+          interval = setInterval (function() {
+            oldActTime = sendWarframeData(oldActTime);
           }, 60000);
-      }
+        }
     }
 });
 
