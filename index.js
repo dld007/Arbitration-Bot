@@ -2,7 +2,10 @@
 const axios = require('axios').default;
 
 //Get dotenv library, which converts .env to process.env
-require("dotenv").config()
+require("dotenv").config();
+
+//Get cron library, which manages scheduling
+var CronJob = require('cron').CronJob;
 
 //Get discord library to access discord api
 const Discord = require("discord.js")
@@ -19,7 +22,7 @@ const WARFRAME_API_REQUEST_HEADERS = {
   'User-Agent': 'axios/0.19.2'
 };
 
-//Set up arbitration variable
+//Set up arbitration variable and set to some default values
 var Arbit = {
   "activation": "2020-06-11T23:54:05Z",
   "expiry": "2020-06-11T23:54:05Z",
@@ -51,6 +54,7 @@ function getWarframeData() {
   WARFRAME_API_REQUEST_HEADERS })
     .then(response => {
     Arbit = response.data;
+    console.log(Arbit);
   })
   .catch(error => console.error('On get error',error))
   var now = getESTTimePlusOne();
@@ -93,10 +97,13 @@ client.on('message', function(message) {
           return oldAc; //Activation time is currently undefined, keep old activation time
         }
 
+        //Checks arbitration data every minute
         if (!interval) { //If interval has not been initialized yet. Ensures there is only one repeating message/hr
-          interval = setInterval (function() {
+          interval = true;
+          var job = new CronJob('0 */1 * * * *', function() {
             oldActTime = sendWarframeData(oldActTime);
-          }, 60000);
+          }, null, true, 'America/New_York');
+          job.start();
         }
     }
 });
